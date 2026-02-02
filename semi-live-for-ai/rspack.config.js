@@ -1,9 +1,6 @@
 const path = require('path');
-const webpack = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
-const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+const rspack = require('@rspack/core');
+const ReactRefreshPlugin = require('@rspack/plugin-react-refresh');
 
 const isDev = process.env.NODE_ENV === 'development';
 const rootPath = path.join(__dirname, '..');
@@ -24,8 +21,10 @@ const sourcePackages = [
 
 module.exports = {
     mode: isDev ? 'development' : 'production',
-    bail: !isDev,
-    devtool: isDev ? 'eval-cheap-module-source-map' : 'source-map',
+    devtool: isDev ? 'cheap-module-source-map' : 'source-map',
+    experiments: {
+        css: true,
+    },
     entry: {
         main: './src/main.tsx'
     },
@@ -35,31 +34,35 @@ module.exports = {
         publicPath: '/',
         clean: true,
     },
-    
+
     module: {
         rules: [
-            // TypeScript/JavaScript for source packages
+            // TypeScript/JavaScript - 使用 rspack 内置的 SWC
             {
                 test: /\.[tj]sx?$/,
                 include: [
                     path.join(__dirname, 'src'),
                     ...sourcePackages,
                 ],
-                use: [
-                    {
-                        loader: 'babel-loader',
-                        options: {
-                            presets: [
-                                ['@babel/preset-env', { targets: 'defaults' }],
-                                ['@babel/preset-react', { runtime: 'automatic' }],
-                                '@babel/preset-typescript',
-                            ],
-                            plugins: isDev ? [require.resolve('react-refresh/babel')] : [],
-                        }
+                loader: 'builtin:swc-loader',
+                options: {
+                    jsc: {
+                        parser: {
+                            syntax: 'typescript',
+                            tsx: true,
+                        },
+                        transform: {
+                            react: {
+                                runtime: 'automatic',
+                                development: isDev,
+                                refresh: isDev,
+                            },
+                        },
                     },
-                ]
+                },
+                type: 'javascript/auto',
             },
-            // JavaScript from node_modules (don't process with babel)
+            // JavaScript from node_modules
             {
                 test: /\.m?js$/,
                 resolve: {
@@ -68,10 +71,8 @@ module.exports = {
             },
             // SCSS/CSS
             {
-                test: /\.s?css$/,
+                test: /\.scss$/,
                 use: [
-                    isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
-                    'css-loader',
                     {
                         loader: 'sass-loader',
                         options: {
@@ -79,11 +80,16 @@ module.exports = {
                             sassOptions: {
                                 silenceDeprecations: ['legacy-js-api', 'import', 'global-builtin'],
                             },
-                            // 在每个 SCSS 文件前导入 theme 变量
                             additionalData: `@import "${path.join(packagesDir, 'semi-theme-default/scss/index.scss').replace(/\\/g, '/')}";`,
                         },
                     },
                 ],
+                type: 'css/auto',
+            },
+            // CSS
+            {
+                test: /\.css$/,
+                type: 'css/auto',
             },
             // Images
             {
@@ -92,7 +98,7 @@ module.exports = {
             },
         ]
     },
-    
+
     optimization: {
         minimize: !isDev,
         splitChunks: {
@@ -111,30 +117,25 @@ module.exports = {
             },
         },
     },
-    
+
     performance: {
         maxEntrypointSize: 10485760,
         maxAssetSize: 10485760,
         hints: isDev ? false : 'warning',
     },
-    
+
     plugins: [
-        // webpack 5 通过 mode 自动设置 process.env.NODE_ENV，无需手动定义
-        new CaseSensitivePathsPlugin(),
-        new HtmlWebpackPlugin({
+        new rspack.HtmlRspackPlugin({
             template: './index.html',
             inject: true,
         }),
-        !isDev && new MiniCssExtractPlugin({
-            filename: '[name].[contenthash:8].css',
-        }),
-        isDev && new ReactRefreshWebpackPlugin(),
+        isDev && new ReactRefreshPlugin(),
     ].filter(Boolean),
-    
+
     resolve: {
         extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
         alias: {
-            // 精确匹配（$）指向入口文件，避免 webpack 读取 package.json 的 main/module 字段
+            // 精确匹配（$）指向入口文件
             "@douyinfe/semi-ui$": path.join(packagesDir, "semi-ui/index.ts"),
             "@douyinfe/semi-foundation$": path.join(packagesDir, "semi-foundation/index.ts"),
             "@douyinfe/semi-icons$": path.join(packagesDir, "semi-icons/src/index.ts"),
@@ -159,7 +160,7 @@ module.exports = {
             "react/jsx-runtime": path.join(require.resolve("react"), "..", "jsx-runtime.js"),
         },
     },
-    
+
     devServer: {
         port: 3000,
         hot: true,
