@@ -3,8 +3,6 @@ import { rspack, type SwcLoaderOptions } from "@rspack/core";
 import ReactRefreshPlugin from "@rspack/plugin-react-refresh";
 import path from "path";
 
-const isDev = process.env.NODE_ENV === "development";
-
 // Target browsers, see: https://github.com/browserslist/browserslist
 const targets = ["last 2 versions", "> 0.2%", "not dead", "Firefox ESR"];
 
@@ -24,7 +22,11 @@ const sourcePackages = [
 	path.join(packagesDir, 'semi-json-viewer-core/src'),
 ];
 
-export default defineConfig({
+// 使用函数形式的 defineConfig，通过 argv.mode 可靠判断构建模式
+export default defineConfig((env, argv) => {
+	const isDev = argv.mode === "development";
+	
+	return {
 	mode: isDev ? "development" : "production",
 	devtool: isDev ? "cheap-module-source-map" : "source-map",
 	experiments: {
@@ -234,4 +236,5 @@ export default defineConfig({
 			directory: path.join(__dirname, "public"),
 		},
 	},
+};
 });
