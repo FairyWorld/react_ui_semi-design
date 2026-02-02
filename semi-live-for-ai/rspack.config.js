@@ -31,7 +31,7 @@ module.exports = {
     output: {
         filename: isDev ? '[name].js' : '[name].[contenthash:8].js',
         path: path.join(__dirname, 'dist'),
-        publicPath: '/',
+        publicPath: '',
         clean: true,
     },
 
