@@ -89,6 +89,15 @@ Find MCP configuration in settings and add:
 }
 ```
 
+#### Claude CLI (Claude Code)
+
+Run the following command in terminal to add MCP:
+
+```bash
+claude mcp add semi-mcp -- npx -y @douyinfe/semi-mcp
+# For intranet users: claude mcp add semi-mcp -- npx -y @ies/semi-mcp-bytedance
+```
+
 #### Troubleshooting
 
 <Notice type="warning" title='⚠️ oxc-parser Related Errors'>
