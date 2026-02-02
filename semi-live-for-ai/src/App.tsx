@@ -1,6 +1,9 @@
 import React, { useState, useCallback } from 'react';
 import { LiveProvider, LiveEditor, LivePreview, LiveError } from 'react-live';
 
+// Semi 全局样式 - 必须在组件之前导入
+import '@douyinfe/semi-theme-default/scss/global.scss';
+
 // Semi UI 组件 - 使用稳定的导入方式
 import * as SemiUI from '@douyinfe/semi-ui';
 
