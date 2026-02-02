@@ -89,6 +89,15 @@ MCP 的安装方式因客户端而异，以下是常见客户端的配置方法�
 }
 ```
 
+#### Claude CLI (Claude Code)
+
+在终端中运行以下命令添加 MCP：
+
+```bash
+claude mcp add semi-mcp -- npx -y @douyinfe/semi-mcp
+# 内网用户请使用：claude mcp add semi-mcp -- npx -y @ies/semi-mcp-bytedance
+```
+
 #### 故障排除
 
 <Notice type="warning" title='⚠️ oxc-parser 相关错误'>
