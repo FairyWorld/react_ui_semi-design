@@ -2,7 +2,6 @@ const path = require('path');
 const rspack = require('@rspack/core');
 const ReactRefreshPlugin = require('@rspack/plugin-react-refresh');
 
-const isDev = process.env.NODE_ENV === 'development';
 const rootPath = path.join(__dirname, '..');
 const packagesDir = path.join(rootPath, 'packages');
 
@@ -19,7 +18,11 @@ const sourcePackages = [
     path.join(packagesDir, 'semi-json-viewer-core/src'),
 ];
 
-module.exports = {
+// 使用函数形式导出，通过 argv.mode 可靠判断构建模式
+module.exports = (env, argv) => {
+    const isDev = argv.mode === 'development';
+    
+    return {
     mode: isDev ? 'development' : 'production',
     devtool: isDev ? 'cheap-module-source-map' : 'source-map',
     experiments: {
@@ -170,4 +173,5 @@ module.exports = {
             directory: path.join(__dirname, 'public'),
         },
     },
+};
 };
