@@ -1,9 +1,7 @@
 import { defineConfig } from "@rspack/cli";
 import { rspack, type SwcLoaderOptions } from "@rspack/core";
-import { ReactRefreshRspackPlugin } from "@rspack/plugin-react-refresh";
+import ReactRefreshPlugin from "@rspack/plugin-react-refresh";
 import path from "path";
-
-const isDev = process.env.NODE_ENV === "development";
 
 // Target browsers, see: https://github.com/browserslist/browserslist
 const targets = ["last 2 versions", "> 0.2%", "not dead", "Firefox ESR"];
@@ -11,34 +9,67 @@ const targets = ["last 2 versions", "> 0.2%", "not dead", "Firefox ESR"];
 // 外部仓库 packages 目录
 const packagesDir = path.resolve(__dirname, "../packages");
 
-export default defineConfig({
+// 需要从源码编译的 packages
+const sourcePackages = [
+	path.join(packagesDir, 'semi-ui'),
+	path.join(packagesDir, 'semi-foundation'),
+	path.join(packagesDir, 'semi-icons/src'),
+	path.join(packagesDir, 'semi-icons-lab/src'),
+	path.join(packagesDir, 'semi-illustrations/src'),
+	path.join(packagesDir, 'semi-animation'),
+	path.join(packagesDir, 'semi-animation-react'),
+	path.join(packagesDir, 'semi-animation-styled'),
+	path.join(packagesDir, 'semi-json-viewer-core/src'),
+];
+
+// 使用函数形式的 defineConfig，通过 argv.mode 可靠判断构建模式
+export default defineConfig((env, argv) => {
+	const isDev = argv.mode === "development";
+	
+	return {
+	mode: isDev ? "development" : "production",
+	devtool: isDev ? "cheap-module-source-map" : "source-map",
+	experiments: {
+		css: true,
+	},
 	entry: {
 		main: "./src/main.tsx"
 	},
+	output: {
+		filename: isDev ? "[name].js" : "[name].[contenthash:8].js",
+		path: path.join(__dirname, "dist"),
+		publicPath: "",
+		clean: true,
+	},
 	resolve: {
-		extensions: ["...", ".ts", ".tsx", ".jsx"],
-		// 从根目录 node_modules 和 playground 的 node_modules 中解析依赖
-		modules: [
-			path.resolve(__dirname, "node_modules"),
-			path.resolve(__dirname, "../node_modules"),
-			"node_modules"
-		],
+		extensions: [".ts", ".tsx", ".js", ".jsx", ".json"],
 		alias: {
-			// Semi UI 组件库 - 指向源码
-			"@douyinfe/semi-ui": path.resolve(packagesDir, "semi-ui"),
-			"@douyinfe/semi-foundation": path.resolve(packagesDir, "semi-foundation"),
-			"@douyinfe/semi-icons": path.resolve(packagesDir, "semi-icons/src"),
-			"@douyinfe/semi-icons-lab": path.resolve(packagesDir, "semi-icons-lab/src"),
-			"@douyinfe/semi-illustrations": path.resolve(packagesDir, "semi-illustrations/src"),
-			"@douyinfe/semi-theme-default": path.resolve(packagesDir, "semi-theme-default"),
-			
-			// Semi 动画相关
-			"@douyinfe/semi-animation": path.resolve(packagesDir, "semi-animation"),
-			"@douyinfe/semi-animation-react": path.resolve(packagesDir, "semi-animation-react"),
-			"@douyinfe/semi-animation-styled": path.resolve(packagesDir, "semi-animation-styled"),
-			
-			// Semi JSON Viewer
-			"@douyinfe/semi-json-viewer-core": path.resolve(packagesDir, "semi-json-viewer-core/src"),
+			// 精确匹配（$）指向入口文件，避免读取 package.json 的 main/module 字段
+			"@douyinfe/semi-ui$": path.join(packagesDir, "semi-ui/index.ts"),
+			"@douyinfe/semi-foundation$": path.join(packagesDir, "semi-foundation/index.ts"),
+			"@douyinfe/semi-icons$": path.join(packagesDir, "semi-icons/src/index.ts"),
+			"@douyinfe/semi-icons-lab$": path.join(packagesDir, "semi-icons-lab/src/index.tsx"),
+			"@douyinfe/semi-illustrations$": path.join(packagesDir, "semi-illustrations/src/index.ts"),
+			"@douyinfe/semi-animation$": path.join(packagesDir, "semi-animation/index.ts"),
+			"@douyinfe/semi-animation-react$": path.join(packagesDir, "semi-animation-react/index.ts"),
+			"@douyinfe/semi-animation-styled$": path.join(packagesDir, "semi-animation-styled/index.ts"),
+			"@douyinfe/semi-json-viewer-core$": path.join(packagesDir, "semi-json-viewer-core/src/index.ts"),
+			"@douyinfe/semi-theme-default$": path.join(packagesDir, "semi-theme-default/scss/index.scss"),
+			// 前缀匹配用于深层导入
+			"@douyinfe/semi-ui": path.join(packagesDir, "semi-ui"),
+			"@douyinfe/semi-foundation": path.join(packagesDir, "semi-foundation"),
+			"@douyinfe/semi-icons": path.join(packagesDir, "semi-icons/src"),
+			"@douyinfe/semi-icons-lab": path.join(packagesDir, "semi-icons-lab/src"),
+			"@douyinfe/semi-illustrations": path.join(packagesDir, "semi-illustrations/src"),
+			"@douyinfe/semi-animation": path.join(packagesDir, "semi-animation"),
+			"@douyinfe/semi-animation-react": path.join(packagesDir, "semi-animation-react"),
+			"@douyinfe/semi-animation-styled": path.join(packagesDir, "semi-animation-styled"),
+			"@douyinfe/semi-json-viewer-core": path.join(packagesDir, "semi-json-viewer-core/src"),
+			"@douyinfe/semi-theme-default": path.join(packagesDir, "semi-theme-default"),
+			"react/jsx-runtime": path.join(require.resolve("react"), "..", "jsx-runtime.js"),
+			// 确保 react-dom 从 playground 的 node_modules 解析
+			"react-dom": path.dirname(require.resolve("react-dom/package.json")),
+			"react": path.dirname(require.resolve("react/package.json")),
 		}
 	},
 	module: {
@@ -75,9 +106,13 @@ export default defineConfig({
 					path.resolve(__dirname, "loaders/semi-react19-loader.js")
 				]
 			},
-			// 其他 JS/TS 文件
+			// 其他源码包的 JS/TS 文件
 			{
 				test: /\.(jsx?|tsx?)$/,
+				include: [
+					path.join(__dirname, "src"),
+					...sourcePackages.filter(p => p !== path.join(packagesDir, 'semi-ui')),
+				],
 				exclude: [path.resolve(packagesDir, "semi-ui")],
 				use: [
 					{
@@ -100,6 +135,13 @@ export default defineConfig({
 						} satisfies SwcLoaderOptions
 					}
 				]
+			},
+			// JavaScript from node_modules
+			{
+				test: /\.m?js$/,
+				resolve: {
+					fullySpecified: false,
+				},
 			},
 			// SCSS/SASS 支持
 			{
@@ -125,6 +167,7 @@ export default defineConfig({
 								return scssVarStr + animationStr + content;
 							},
 							sassOptions: {
+								silenceDeprecations: ['legacy-js-api', 'import', 'global-builtin'],
 								// 允许 @import 从 semi-theme-default 获取变量
 								includePaths: [
 									path.resolve(packagesDir, "semi-theme-default/scss"),
@@ -134,30 +177,64 @@ export default defineConfig({
 						}
 					}
 				],
-				type: "css"
+				type: "css/auto"
 			},
 			// CSS 支持
 			{
 				test: /\.css$/i,
-				type: "css"
-			}
+				type: "css/auto"
+			},
+			// Images
+			{
+				test: /\.(png|jpe?g|gif|webp)$/i,
+				type: "asset/resource",
+			},
 		]
 	},
-	plugins: [
-		new rspack.HtmlRspackPlugin({
-			template: "./index.html"
-		}),
-		isDev ? new ReactRefreshRspackPlugin() : null
-	],
 	optimization: {
+		minimize: !isDev,
 		minimizer: [
 			new rspack.SwcJsMinimizerRspackPlugin(),
 			new rspack.LightningCssMinimizerRspackPlugin({
 				minimizerOptions: { targets }
 			})
-		]
+		],
+		splitChunks: {
+			chunks: "all",
+			cacheGroups: {
+				react: {
+					test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
+					name: "lib-react",
+					priority: 20,
+				},
+				vendor: {
+					test: /[\\/]node_modules[\\/]/,
+					name: "vendors",
+					priority: 10,
+				},
+			},
+		},
 	},
-	experiments: {
-		css: true
-	}
+	performance: {
+		maxEntrypointSize: 10485760,
+		maxAssetSize: 10485760,
+		hints: isDev ? false : "warning",
+	},
+	plugins: [
+		new rspack.HtmlRspackPlugin({
+			template: "./index.html",
+			inject: true,
+		}),
+		isDev && new ReactRefreshPlugin(),
+	].filter(Boolean),
+	devServer: {
+		port: 3000,
+		hot: true,
+		open: false,
+		historyApiFallback: true,
+		static: {
+			directory: path.join(__dirname, "public"),
+		},
+	},
+};
 });

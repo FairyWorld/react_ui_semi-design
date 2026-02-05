@@ -1,12 +1,12 @@
 import React, { ReactNode } from 'react';
 import { MarkdownRenderProps as OriginMarkdownRenderProps } from '../markdownRender';
 import { MDXProps } from 'mdx/types';
-import { Annotation, ContentItem, InputFile, InputImage, Message } from '@douyinfe/semi-foundation/aiChatDialogue/foundation';
-import { MessageContent } from '@douyinfe/semi-foundation/aiChatInput/interface';
+import type { Annotation, ContentItem, InputFile, InputImage, Message } from '@douyinfe/semi-foundation/aiChatDialogue/foundation';
+import type { MessageContent } from '@douyinfe/semi-foundation/aiChatInput/interface';
 
 export type MarkdownRenderProps = Partial<OriginMarkdownRenderProps>;
 
-export { Message };
+export type { Message };
 
 export interface AIChatDialogueProps {
     align?: 'leftRight' | 'leftAlign';

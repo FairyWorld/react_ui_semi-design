@@ -31,7 +31,8 @@ module.exports = function ({ minimize }) {
                         path.join(rootPath, 'packages/semi-ui'),
                         path.join(rootPath, 'packages/semi-foundation'),
                         path.join(rootPath, 'packages/semi-animation'),
-                        path.join(rootPath, 'packages/semi-animation-react')
+                        path.join(rootPath, 'packages/semi-animation-react'),
+                        path.join(rootPath, 'packages/semi-json-viewer-core'),
                     ],
                     use: [
                         {
@@ -76,6 +77,7 @@ module.exports = function ({ minimize }) {
                 "@douyinfe/semi-illustrations": path.resolve(__dirname, "../semi-illustrations"),
                 "@douyinfe/semi-animation": path.resolve(__dirname, "../semi-animation"),
                 "@douyinfe/semi-animation-react": path.resolve(__dirname, "../semi-animation-react"),
+                "@douyinfe/semi-json-viewer-core": path.resolve(__dirname, "../semi-json-viewer-core/src"),
                 "react/jsx-runtime": path.join(require.resolve("react"), "..", "jsx-runtime.js")
             },
         },
