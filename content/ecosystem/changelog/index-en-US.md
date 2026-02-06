@@ -16,6 +16,12 @@ Version：Major.Minor.Patch (follow the **Semver** specification)
 
 ---
 
+#### 🎉 2.91.0 (2026-02-06)
+- 【Fix】
+    - Fixed regex matching issue in semi-webpack/semi-rspack to support package names with numeric suffixes like @douyinfe/semi-ui-19 [#3127](https://github.com/DouyinFE/semi-design/pull/3127)
+- 【Docs】
+    - Added Claude CLI installation guide for Semi MCP [@guowei-gong](https://github.com/guowei-gong) [#3124](https://github.com/DouyinFE/semi-design/pull/3124)
+
 #### 🎉 2.91.0-beta.0 (2026-01-14)
 - 【Feat】
     - Added Sidebar component
