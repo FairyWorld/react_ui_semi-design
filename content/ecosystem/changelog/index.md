@@ -14,6 +14,11 @@ Semi 版本号遵循 **Semver** 规范（主版本号 - 次版本号 - 修订版
 -   不同版本间的详细关系，可查阅 [FAQ](/zh-CN/start/faq)
 
 
+#### 🎉 2.101.0 (2026-07-02)
+- 【Fix】
+    - 补齐 Upload 组件图片裁切弹窗在日语环境下的标题、确认按钮和取消按钮文案，避免启用裁切功能时回退显示中文默认文案 [@greymoth-jp](https://github.com/greymoth-jp) [#3313](https://github.com/DouyinFE/semi-design/pull/3313)
+    - 修复 JSON Viewer 补全列表及视图清理逻辑中直接写入 HTML 带来的 XSS 风险，补全项现通过 DOM API 创建并使用 `textContent` 渲染文本 [#3314](https://github.com/DouyinFE/semi-design/pull/3314)
+
 #### 🎉 2.100.0 (2026-06-09)
 - 【Fix】
     - 修复 InputNumber 组件在 `step` 绝对值小于 `1e-6`（如 `1e-8`）时，因 `_getPrecLen` 未识别科学计数法字符串（`String(1e-8) === "1e-8"`）导致步进精度计算为 0、点击 +/- 按钮无响应的问题 [@kwokhoho](https://github.com/kwokhoho) [#3308](https://github.com/DouyinFE/semi-design/issues/3308) [#3305](https://github.com/DouyinFE/semi-design/pull/3305)

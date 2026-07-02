@@ -16,6 +16,11 @@ Version：Major.Minor.Patch (follow the **Semver** specification)
 
 ---
 
+#### 🎉 2.101.0 (2026-07-02)
+- 【Fix】
+    - Added missing Japanese locale text for the Upload image-crop modal title, confirm button, and cancel button, avoiding fallback to Chinese defaults when image cropping is enabled in Japanese locale [@greymoth-jp](https://github.com/greymoth-jp) [#3313](https://github.com/DouyinFE/semi-design/pull/3313)
+    - Fixed a potential XSS risk in JSON Viewer by avoiding direct HTML writes in the completion list and view-clearing paths. Completion items are now created with DOM APIs and rendered via `textContent` [#3314](https://github.com/DouyinFE/semi-design/pull/3314)
+
 #### 🎉 2.100.0 (2026-06-09)
 - 【Fix】
     - Fixed InputNumber not responding to +/- buttons when the absolute value of `step` is smaller than `1e-6` (e.g. `1e-8`). `_getPrecLen` did not recognize the scientific-notation string (`String(1e-8) === "1e-8"`) and returned 0 precision, which froze the step calculation [@kwokhoho](https://github.com/kwokhoho) [#3308](https://github.com/DouyinFE/semi-design/issues/3308) [#3305](https://github.com/DouyinFE/semi-design/pull/3305)
