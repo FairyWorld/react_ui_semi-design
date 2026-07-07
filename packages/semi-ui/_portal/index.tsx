@@ -56,7 +56,15 @@ class Portal extends PureComponent<PortalProps, PortalState> {
         try {
             let container: HTMLElement | undefined = undefined;
             if (!this.el || !this.state?.container || !Array.from(this.state.container.childNodes).includes(this.el)) {
-                this.el = document.createElement('div');
+                // Reuse the existing el if it was detached from the container — e.g. React 18+
+                // StrictMode's simulated remount runs componentWillUnmount (which removes el)
+                // and then componentDidMount lands here. Creating a new el would change
+                // createPortal's container identity and force React to unmount & remount the
+                // entire portal subtree (children effects re-run, data requests fire twice).
+                // Re-appending the same node restores the DOM without touching the React tree.
+                if (!this.el) {
+                    this.el = document.createElement('div');
+                }
                 const getContainer = this.props.getPopupContainer || context.getPopupContainer || defaultGetContainer;
                 const portalContainer = getContainer();
                 portalContainer.appendChild(this.el);
