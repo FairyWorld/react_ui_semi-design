@@ -50,6 +50,31 @@ describe('Form-formApi', () => {
             document.body.removeChild(div);
         }
     });
+
+    it('keeps useForm api bound after a StrictMode simulated remount', () => {
+        let formApi;
+        const HookForm = () => {
+            const [api] = Form.useForm();
+            formApi = api;
+            return (
+                <Form form={api} initValues={{ name: 'semi' }}>
+                    <Form.Input field="name" />
+                </Form>
+            );
+        };
+        const wrapper = mount(<HookForm />, {
+            attachTo: document.getElementById('container'),
+        });
+        const form = wrapper.find(Form).instance();
+
+        expect(formApi.getValues()).toEqual({ name: 'semi' });
+        form.componentWillUnmount();
+        form.componentDidMount();
+        expect(formApi.getValues()).toEqual({ name: 'semi' });
+
+        wrapper.unmount();
+    });
+
     it('formApi-getFieldExist', () => {
         let formApi = null;
         let getFormApi = api => {

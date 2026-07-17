@@ -155,12 +155,7 @@ class Form<Values extends Record<string, any> = any> extends BaseComponent<BaseF
         this.reset = this.reset.bind(this);
         this.foundation = new FormFoundation(this.adapter);
         this.formApi = this.foundation.getFormApi();
-        
-        // 如果传入了外部 formApi，绑定真实的 FormApi
-        if (this.props.form && typeof this.props.form.__bind === 'function') {
-            this.props.form.__bind(this.formApi);
-        }
-        
+
         if (this.props.getFormApi) {
             this.props.getFormApi(this.formApi);
         }
@@ -168,6 +163,9 @@ class Form<Values extends Record<string, any> = any> extends BaseComponent<BaseF
 
     componentDidMount() {
         this.foundation.init();
+        if (this.props.form && typeof this.props.form.__bind === 'function') {
+            this.props.form.__bind(this.formApi);
+        }
     }
 
     componentWillUnmount() {
