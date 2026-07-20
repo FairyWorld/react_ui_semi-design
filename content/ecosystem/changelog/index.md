@@ -14,6 +14,12 @@ Semi 版本号遵循 **Semver** 规范（主版本号 - 次版本号 - 修订版
 -   不同版本间的详细关系，可查阅 [FAQ](/zh-CN/start/faq)
 
 
+#### 🎉 2.101.1 (2026-07-20)
+- 【Fix】
+    - 修复 Portal 在 React 18+ StrictMode 模拟重新挂载时重建容器节点，导致浮层子树被卸载并重新挂载、子组件副作用重复执行及数据请求重复发送的问题 [@kwokhoho](https://github.com/kwokhoho) [#3315](https://github.com/DouyinFE/semi-design/issues/3315) [#3316](https://github.com/DouyinFE/semi-design/pull/3316)
+    - 修复 React StrictMode 模拟重新挂载后 `Form.useForm()` 返回的 API 失效，调用 `getValues()` 等方法返回 `undefined` 的问题 [@yipengisbetter](https://github.com/yipengisbetter) [#3320](https://github.com/DouyinFE/semi-design/pull/3320)
+    - 修复 Form.PinCode 组件的值被完全清空时，因对空值直接调用 `split` 而崩溃的问题 [@SudoUserReal](https://github.com/SudoUserReal) [#3317](https://github.com/DouyinFE/semi-design/issues/3317) [#3321](https://github.com/DouyinFE/semi-design/pull/3321)
+
 #### 🎉 2.101.0 (2026-07-02)
 - 【Fix】
     - 补齐 Upload 组件图片裁切弹窗在日语环境下的标题、确认按钮和取消按钮文案，避免启用裁切功能时回退显示中文默认文案 [@greymoth-jp](https://github.com/greymoth-jp) [#3313](https://github.com/DouyinFE/semi-design/pull/3313)
@@ -5051,4 +5057,3 @@ Semi 版本号遵循 **Semver** 规范（主版本号 - 次版本号 - 修订版
 #### 0.0.1 (2019-05-13)
 -   【New Component】
     - 正式发布以下组件 Button、Switch、Pagination、Notification、Tag、Tooltip、Popover、Dropdown、Select、Checkbox、Icon、Toast、DatePicker、Form、Tabs、TimePicker、Radio、Soin、AutoComplete、Slider、Step、Modal、Nav、InputNumber、Input、Grid、ScrollList、Table
-

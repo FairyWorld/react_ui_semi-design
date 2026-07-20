@@ -16,6 +16,12 @@ Version：Major.Minor.Patch (follow the **Semver** specification)
 
 ---
 
+#### 🎉 2.101.1 (2026-07-20)
+- 【Fix】
+    - Fixed Portal recreating its container element during React 18+ StrictMode simulated remounts, which caused popup subtrees to unmount and remount, reran child effects, and sent duplicate data requests [@kwokhoho](https://github.com/kwokhoho) [#3315](https://github.com/DouyinFE/semi-design/issues/3315) [#3316](https://github.com/DouyinFE/semi-design/pull/3316)
+    - Fixed the API returned by `Form.useForm()` becoming unavailable after a React StrictMode simulated remount, causing methods such as `getValues()` to return `undefined` [@yipengisbetter](https://github.com/yipengisbetter) [#3320](https://github.com/DouyinFE/semi-design/pull/3320)
+    - Fixed Form.PinCode crashing when its value was fully cleared because `split` was called directly on an empty value [@SudoUserReal](https://github.com/SudoUserReal) [#3317](https://github.com/DouyinFE/semi-design/issues/3317) [#3321](https://github.com/DouyinFE/semi-design/pull/3321)
+
 #### 🎉 2.101.0 (2026-07-02)
 - 【Fix】
     - Added missing Japanese locale text for the Upload image-crop modal title, confirm button, and cancel button, avoiding fallback to Chinese defaults when image cropping is enabled in Japanese locale [@greymoth-jp](https://github.com/greymoth-jp) [#3313](https://github.com/DouyinFE/semi-design/pull/3313)
